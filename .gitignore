@@ -1,0 +1,77 @@
+# =========================
+# Python cache
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# =========================
+# Virtual environments
+# =========================
+venv/
+env/
+ENV/
+.venv/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# IDEs
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Database files (if any local DB used)
+# =========================
+*.sqlite3
+*.db
+
+# =========================
+# FastAPI / local uploads
+# =========================
+uploads/
+media/
+
+# =========================
+# Testing / coverage
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Migrations (optional - usually NOT ignored if using Alembic)
+# =========================
+# If you use Alembic, DO NOT ignore migrations/
+# migrations/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Docker (optional logs)
+# =========================
+*.pid
+
+# =========================
+# Cache directories
+# =========================
+.mypy_cache/
+.ruff_cache/
