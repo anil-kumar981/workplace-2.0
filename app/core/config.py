@@ -1,64 +1,61 @@
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import model_validator
 
 # Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
 ENV = os.getenv('ENV', 'development')
 
-# Load .env file ONLY if it exists locally (helpful for local dev)
-env_file = BASE_DIR / f".env.{ENV}"
-if env_file.exists():
-    load_dotenv(dotenv_path=env_file)
-else:
-    root_env = BASE_DIR / ".env"
-    if root_env.exists():
-        load_dotenv(dotenv_path=root_env)
-
-class Config:
+class Settings(BaseSettings):
     """
-    Centralized configuration class.
-    Retrieves all values from OS environment variables.
+    Centralized, strongly-typed configuration class using Pydantic Settings.
+    Retrieves all values from OS environment variables and `.env` files automatically.
     Provides safe defaults for development and raises strict validation errors in production.
     """
     ENV: str = ENV
-    PORT: int = int(os.getenv('PORT', 8000))
-    IP_ADDRESS: str = os.getenv('IP_ADDRESS', '127.0.0.1')
+    PORT: int = 8000
+    IP_ADDRESS: str = '127.0.0.1'
     
-    APP_TITLE: str = os.getenv('APP_TITLE', 'Enterprise CRM Backend')
-    APP_DESCRIPTION: str = os.getenv('APP_DESCRIPTION', 'High-performance, asynchronous REST API services built with FastAPI, SQLAlchemy 2.0, and Pydantic v2.')
-    APP_VERSION: str = os.getenv('APP_VERSION', '1.0.0')
-
+    APP_TITLE: str = 'Enterprise CRM Backend'
+    APP_DESCRIPTION: str = 'High-performance, asynchronous REST API services built with FastAPI, SQLAlchemy 2.0, and Pydantic v2.'
+    APP_VERSION: str = '1.0.0'
     
-    # Do not hardcode database URLs or secrets here.
-    DATABASE_URL: str | None = os.getenv('DATABASE_URL') or (
-        None if ENV == 'production' else 'postgresql+asyncpg://postgres:postgres@localhost:5432/postgres'
-    )
-    
-    JWT_SECRET_KEY: str | None = os.getenv('JWT_SECRET_KEY') or (
-        None if ENV == 'production' else 'dev-fallback-secret-never-use-in-prod-123456789'
-    )
-    JWT_ALGORITHM: str = os.getenv('JWT_ALGORITHM', 'HS256')
-    JWT_EXPIRES_IN: str = os.getenv('JWT_EXPIRES_IN', '1h')
-    SALT_ROUNDS: int = int(os.getenv('SALT_ROUNDS', 12))
-    JWT_COOKIE_NAME: str = os.getenv('JWT_COOKIE_NAME', 'access_token')
+    # Database and secrets (no hardcoding)
+    DATABASE_URL: str | None = None
+    JWT_SECRET_KEY: str | None = None
+    JWT_ALGORITHM: str = 'HS256'
+    JWT_EXPIRES_IN: str = '1h'
+    SALT_ROUNDS: int = 12
+    JWT_COOKIE_NAME: str = 'access_token'
     
     # Mail parameters
-    MAIL_HOST: str = os.getenv('MAIL_HOST', 'smtp.gmail.com')
-    MAIL_PORT: int = int(os.getenv('MAIL_PORT', 587))
-    MAIL_USER: str = os.getenv('MAIL_USER', '')
-    MAIL_PASSWORD: str = os.getenv('MAIL_PASSWORD', '')
-    MAIL_SECURE: bool = os.getenv('MAIL_SECURE', 'False').lower() in ('true', '1', 't')
-    MAIL_FROM: str = os.getenv('MAIL_FROM', '')
+    MAIL_HOST: str = 'smtp.gmail.com'
+    MAIL_PORT: int = 587
+    MAIL_USER: str = ''
+    MAIL_PASSWORD: str = ''
+    MAIL_SECURE: bool = False
+    MAIL_FROM: str = ''
     
     # Cookies
-    COOKIE_MAX_AGE: int = int(os.getenv('COOKIE_MAX_AGE', 3600))
-    COOKIE_SECURE: bool = os.getenv('COOKIE_SECURE', 'False').lower() in ('true', '1', 't')
-    COOKIE_SAMESITE: str = os.getenv('COOKIE_SAMESITE', 'Lax')
+    COOKIE_MAX_AGE: int = 3600
+    COOKIE_SECURE: bool = False
+    COOKIE_SAMESITE: str = 'Lax'
 
-    def __init__(self):
-        # In production, require environment variables to be explicitly set
+    # Tell Pydantic how to discover and parse the .env file automatically
+    model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / f".env.{ENV}") if (BASE_DIR / f".env.{ENV}").exists() else str(BASE_DIR / ".env"),
+        env_file_encoding='utf-8',
+        extra='ignore'
+    )
+
+    @model_validator(mode='after')
+    def validate_production_secrets(self) -> 'Settings':
+        """
+        In production, require database URLs and secrets to be explicitly configured.
+        In other environments, fall back to safe local development defaults.
+        """
         if self.ENV == 'production':
             if not self.DATABASE_URL:
                 raise ValueError("DATABASE_URL must be explicitly configured in the production environment!")
@@ -66,6 +63,10 @@ class Config:
                 raise ValueError("JWT_SECRET_KEY must be explicitly configured in the production environment!")
         else:
             if not self.DATABASE_URL:
-                raise ValueError("DATABASE_URL must be configured.")
+                self.DATABASE_URL = 'postgresql+asyncpg://postgres:postgres@localhost:5432/postgres'
+            if not self.JWT_SECRET_KEY:
+                self.JWT_SECRET_KEY = 'dev-fallback-secret-never-use-in-prod-123456789'
+        return self
 
-config = Config()
+# Global singleton configuration object instance
+config = Settings()

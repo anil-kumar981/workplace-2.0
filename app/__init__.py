@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.users import router as user_router
 from app.core import config
+from app.middleware.exception_handler import register_exception_handlers
 
 # Instantiate modern, asynchronous FastAPI application context
 app = FastAPI(
@@ -18,6 +19,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register centralized global exception handlers to capture system, client, and validation errors
+register_exception_handlers(app)
 
 # Mount modular routing layers under clean namespaces
 app.include_router(user_router, prefix="/api")

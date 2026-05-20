@@ -1,8 +1,10 @@
 import uvicorn
 from app import app
+from app.core import config
 
 __all__ = ["app"]
 
 if __name__ == "__main__":
-    # Start uvicorn server dynamically if run directly via 'python main.py'
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # Start uvicorn server dynamically using configurations loaded from environment
+    uvicorn.run("main:app", host=config.IP_ADDRESS, port=config.PORT, reload=True)
+

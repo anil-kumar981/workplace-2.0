@@ -6,37 +6,31 @@ from app.schema import UserCreate
 
 class UserRepo(BaseRepo):
     async def create_user(self, user_create: UserCreate, hashed_password: str) -> User:
-        try:
-            new_user = User(
-                email=user_create.email,
-                username=user_create.username,
-                hashed_password=hashed_password,
-                role_id=user_create.role_id,
-            )
-            self.db.add(new_user)
-            await self.db.commit()
-            await self.db.refresh(new_user)
-            return new_user
-        except Exception as e:
-            await self.db.rollback()
-            raise e
+        """
+        Adds a new User entity to the current database session state.
+        Transaction commit is handled at the Service layer.
+        """
+        new_user = User(
+            email=user_create.email,
+            username=user_create.username,
+            hashed_password=hashed_password,
+            role_id=user_create.role_id,
+        )
+        self.db.add(new_user)
+        return new_user
 
     async def get_all_users(self) -> list[User]:
-        try:
-            stmt = select(User)
-            result = await self.db.execute(stmt)
-            users = result.scalars().all()
-            return list(users)
-        except Exception as e:
-            await self.db.rollback()
-            raise e
+        """
+        Retrieves all user records from the database.
+        """
+        stmt = select(User)
+        result = await self.db.execute(stmt)
+        return list(result.scalars().all())
 
     async def get_user_by_id(self, id: int) -> User | None:
-        try:
-            stmt = select(User).where(User.id == id)
-            result = await self.db.execute(stmt)
-            user = result.scalars().first()
-            return user
-        except Exception as e:
-            await self.db.rollback()
-            raise e
+        """
+        Finds a user record by its primary key identifier.
+        """
+        stmt = select(User).where(User.id == id)
+        result = await self.db.execute(stmt)
+        return result.scalars().first()
