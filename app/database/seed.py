@@ -9,83 +9,38 @@ from app.shared.utils.security import hash_password
 
 __all__ = ["AsyncSession"]
 # 1. Translate TypeScript permission seed data
-INITIAL_PERMISSIONS = [
-    # User Management
+# Systematically define resources and their standard CRUD + Manage permissions
+RESOURCES = [
+    "User", "Project", "ProjectAssignedUser", "Attendance", "Leave", 
+    "HolidayMaster", "WeekendConfig", "HolidayCalendar", "Announcement", 
+    "JobOpening", "Applicant", "Role", "Permission", "Lead", "Comment", 
+    "Task", "TaskActivityHistory", "TaskAssignmentHistory", "Employee"
+]
+ACTIONS = ["manage", "create", "update", "view", "delete"]
+SCOPES = ["any", "own"]
+
+INITIAL_PERMISSIONS = []
+# Generate systematic permissions for all resources
+for r in RESOURCES:
+    for a in ACTIONS:
+        for s in SCOPES:
+            INITIAL_PERMISSIONS.append({
+                "resource": r,
+                "action": a,
+                "scope": s
+            })
+
+# Add legacy or custom actions to ensure backward compatibility
+INITIAL_PERMISSIONS.extend([
     {"resource": "User", "action": "ManageStaff", "scope": "any"},
-    {"resource": "User", "action": "view", "scope": "any"},
-    {"resource": "User", "action": "view", "scope": "own"},
     {"resource": "User", "action": "ResetPassword", "scope": "own"},
-    # Project Management
-    {"resource": "Project", "action": "view", "scope": "any"},
     {"resource": "Project", "action": "assign", "scope": "any"},
     {"resource": "Project", "action": "revoke", "scope": "any"},
-    {"resource": "Project", "action": "manage", "scope": "any"},
-    {"resource": "Project", "action": "view", "scope": "own"},
-    {"resource": "Project", "action": "create", "scope": "any"},
-    {"resource": "Project", "action": "update", "scope": "any"},
-    {"resource": "Project", "action": "delete", "scope": "any"},
-    {"resource": "Project", "action": "manage", "scope": "own"},
-    # Project Assignments
-    {"resource": "ProjectAssignedUser", "action": "manage", "scope": "any"},
-    {"resource": "ProjectAssignedUser", "action": "view", "scope": "own"},
-    # Attendance & Leaves
-    {"resource": "Attendance", "action": "manage", "scope": "any"},
-    {"resource": "Attendance", "action": "create", "scope": "own"},
     {"resource": "Attendance", "action": "checkout", "scope": "own"},
-    {"resource": "Attendance", "action": "view", "scope": "own"},
     {"resource": "Leave", "action": "approve", "scope": "any"},
     {"resource": "Leave", "action": "request", "scope": "own"},
-    {"resource": "Leave", "action": "view", "scope": "own"},
-    {"resource": "Leave", "action": "manage", "scope": "any"},
-    # Holiday Master
-    {"resource": "HolidayMaster", "action": "manage", "scope": "any"},
-    {"resource": "HolidayMaster", "action": "view", "scope": "any"},
-    # Weekend Config
-    {"resource": "WeekendConfig", "action": "manage", "scope": "any"},
-    {"resource": "WeekendConfig", "action": "create", "scope": "any"},
-    # Holiday Calendar
-    {"resource": "HolidayCalendar", "action": "manage", "scope": "any"},
-    {"resource": "HolidayCalendar", "action": "create", "scope": "any"},
-    {"resource": "HolidayCalendar", "action": "update", "scope": "any"},
-    {"resource": "HolidayCalendar", "action": "view", "scope": "any"},
-    # Announcements
-    {"resource": "Announcement", "action": "manage", "scope": "any"},
-    # Recruitment
-    {"resource": "JobOpening", "action": "manage", "scope": "any"},
-    {"resource": "Applicant", "action": "manage", "scope": "any"},
-    # Role & Permission Management
-    {"resource": "Role", "action": "view", "scope": "any"},
-    {"resource": "Role", "action": "manage", "scope": "any"},
-    {"resource": "Permission", "action": "view", "scope": "any"},
-    {"resource": "Permission", "action": "manage", "scope": "any"},
-    # Leads & Comments
-    {"resource": "Lead", "action": "view", "scope": "any"},
-    {"resource": "Lead", "action": "view", "scope": "own"},
-    {"resource": "Lead", "action": "manage", "scope": "any"},
-    {"resource": "Comment", "action": "manage", "scope": "own"},
-    {"resource": "Comment", "action": "manage", "scope": "any"},
-    # Task Management
-    {"resource": "Task", "action": "manage", "scope": "any"},
-    {"resource": "Task", "action": "view", "scope": "any"},
-    {"resource": "Task", "action": "manage", "scope": "own"},
-    {"resource": "Task", "action": "view", "scope": "own"},
-    {"resource": "Task", "action": "update", "scope": "own"},
-    {"resource": "Task", "action": "create", "scope": "any"},
-    {"resource": "Task", "action": "create", "scope": "own"},
-    {"resource": "Task", "action": "update", "scope": "any"},
-    # Task Activity History
-    {"resource": "TaskActivityHistory", "action": "view", "scope": "any"},
-    {"resource": "TaskActivityHistory", "action": "create", "scope": "any"},
-    {"resource": "TaskActivityHistory", "action": "view", "scope": "own"},
-    # Task Assignment History
-    {"resource": "TaskAssignmentHistory", "action": "view", "scope": "any"},
-    {"resource": "TaskAssignmentHistory", "action": "create", "scope": "any"},
-    {"resource": "TaskAssignmentHistory", "action": "manage", "scope": "any"},
-    # Employee
-    {"resource": "Employee", "action": "view", "scope": "any"},
-    {"resource": "Employee", "action": "view", "scope": "own"},
-    {"resource": "Employee", "action": "manage", "scope": "any"},
-]
+])
+
 
 # 2. Roles configurations
 INITIAL_ROLES = {

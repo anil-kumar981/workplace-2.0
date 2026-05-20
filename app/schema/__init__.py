@@ -1,8 +1,13 @@
-from .users.user_response import UserResponse
-from .users.user_create import UserCreate
-
+from .users import UserBase, UserCreate, UserResponse
+from .auth import OtpType, OtpRequest, OtpVerify, LoginRequest, ForgotPasswordRequest
 
 __all__ = [
+    "UserBase",
     "UserCreate",
-    "UserResponse"
+    "UserResponse",
+    "OtpType",
+    "OtpRequest",
+    "OtpVerify",
+    "LoginRequest",
+    "ForgotPasswordRequest",
 ]
