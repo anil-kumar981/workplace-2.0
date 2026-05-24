@@ -1,3 +1,4 @@
+from app.shared.utils.check_permissions import PermissionChecker
 from fastapi import APIRouter, Depends, status
 from app.schema import UserCreate
 from app.schema.auth import OtpRequest, OtpVerify, LoginRequest, ForgotPasswordRequest
@@ -10,7 +11,7 @@ from app.models.users import User
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED, dependencies=[Depends(PermissionChecker("User", "ManageStaff"))])
 async def register(
     user_in: UserCreate,
     service: AuthService = Depends(get_auth_service)

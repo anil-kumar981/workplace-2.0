@@ -45,6 +45,12 @@ class Settings(BaseSettings):
     COOKIE_SAMESITE: str = 'Lax'
     COOKIE_SAME_SITE: str | None = None
 
+    # Admin Credentials
+    ADMIN_ID: str | None = "userId"
+    ADMIN_NAME: str | None = "User Name"
+    ADMIN_MAIL: str | None = "[EMAIL_ADDRESS]"
+    ADMIN_PASSWORD: str | None = "password"
+
     # Tell Pydantic how to discover and parse the .env file automatically
     model_config = SettingsConfigDict(
         env_file=str(BASE_DIR / f".env.{ENV}") if (BASE_DIR / f".env.{ENV}").exists() else str(BASE_DIR / ".env"),

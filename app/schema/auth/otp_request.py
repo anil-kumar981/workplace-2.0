@@ -2,6 +2,7 @@ from enum import Enum
 from pydantic import BaseModel, EmailStr
 
 class OtpType(str, Enum):
+    register = "register"
     login = "login"
     forgot_password = "forgot_password"
 
