@@ -4,6 +4,7 @@ from .user_base import UserBase
 
 
 class UserResponse(UserBase):
+    id: int
     is_active: bool
     is_verified: bool
     created_at: datetime

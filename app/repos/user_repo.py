@@ -34,3 +34,19 @@ class UserRepo(BaseRepo):
         stmt = select(User).where(User.id == id)
         result = await self.db.execute(stmt)
         return result.scalars().first()
+
+    async def get_user_by_email(self, email: str) -> User | None:
+        """
+        Finds a user record by its email address.
+        """
+        stmt = select(User).where(User.email == email)
+        result = await self.db.execute(stmt)
+        return result.scalars().first()
+
+    async def update_user_password(self, user: User, hashed_password: str) -> User:
+        """
+        Updates the user's password hash.
+        """
+        user.hashed_password = hashed_password
+        self.db.add(user)
+        return user

@@ -39,9 +39,17 @@ class Settings(BaseSettings):
     MAIL_FROM: str = ''
     
     # Cookies
+    COOKIE_NAME: str = 'access_token'
     COOKIE_MAX_AGE: int = 3600
     COOKIE_SECURE: bool = False
     COOKIE_SAMESITE: str = 'Lax'
+    COOKIE_SAME_SITE: str | None = None
+
+    # Admin Credentials
+    ADMIN_ID: str | None = "userId"
+    ADMIN_NAME: str | None = "User Name"
+    ADMIN_MAIL: str | None = "[EMAIL_ADDRESS]"
+    ADMIN_PASSWORD: str | None = "password"
 
     # Tell Pydantic how to discover and parse the .env file automatically
     model_config = SettingsConfigDict(
@@ -66,6 +74,11 @@ class Settings(BaseSettings):
                 self.DATABASE_URL = 'postgresql+asyncpg://postgres:postgres@localhost:5432/postgres'
             if not self.JWT_SECRET_KEY:
                 self.JWT_SECRET_KEY = 'dev-fallback-secret-never-use-in-prod-123456789'
+        
+        # Synchronize cookie same-site variable names
+        if self.COOKIE_SAME_SITE:
+            self.COOKIE_SAMESITE = self.COOKIE_SAME_SITE
+            
         return self
 
 # Global singleton configuration object instance
