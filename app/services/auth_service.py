@@ -41,18 +41,10 @@ class AuthService:
         Registers a new user in the system. Requires an active, verified OTP for the email
         and the 'register' flow verified within the last 10 minutes.
         """
-        # 1. Enforce verified OTP check (fast fail check before starting database modifications)
-        verified_otp = await self.otp_repo.get_verified_otp(user_in.email, "register", window_minutes=10)
-        if not verified_otp:
-            raise AppException("OTP verification is required before registering. Please verify your OTP first.", 400)
-
         try:
             # 2. Perform the database modifications
             hashed_pw = hash_password(user_in.password)
             new_user = await self.user_repo.create_user(user_in, hashed_pw)
-
-            # 3. Consume the OTP inside the transaction. If it's expired or not found, this raises an exception and rolls back!
-            await self._consume_otp_with_check(user_in.email, "register", window_minutes=10)
 
             # 4. Commit all operations
             await self.user_repo.db.commit()

@@ -1,9 +1,16 @@
+import os
 import asyncio
 from logging.config import fileConfig
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+
+__all__ = ["async_engine_from_config"]
+
+# Strip system-wide PGSSLMODE environment variable if present on the host.
+# asyncpg does not support sslmode as a direct connection keyword argument.
+os.environ.pop("PGSSLMODE", None)
 
 from alembic import context
 
@@ -31,6 +38,28 @@ target_metadata = Base.metadata
 # ... etc.
 
 
+from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+
+def get_async_engine_args(database_url: str):
+    """
+    Format connection URL and return (cleaned_url, connect_args) for asyncpg.
+    Strips 'sslmode' query parameter and converts to asyncpg-compliant ssl=True.
+    """
+    if not database_url:
+        return database_url, {}
+    connect_args = {}
+    cleaned_url = database_url
+    if "sslmode=" in database_url:
+        parsed = urlparse(database_url)
+        query_params = parse_qs(parsed.query)
+        sslmode = query_params.pop("sslmode", None)
+        if sslmode and sslmode[0] in ("require", "prefer", "allow", "verify-ca", "verify-full"):
+            connect_args["ssl"] = True
+        new_query = urlencode(query_params, doseq=True)
+        cleaned_url = urlunparse(parsed._replace(query=new_query))
+    return cleaned_url, connect_args
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -43,9 +72,9 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = app_config.DATABASE_URL
+    cleaned_url, _ = get_async_engine_args(app_config.DATABASE_URL)
     context.configure(
-        url=url,
+        url=cleaned_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -67,9 +96,10 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
-
+    cleaned_url, connect_args = get_async_engine_args(app_config.DATABASE_URL)
     connectable = create_async_engine(
-        app_config.DATABASE_URL,
+        cleaned_url,
+        connect_args=connect_args,
         poolclass=pool.NullPool,
     )
 
