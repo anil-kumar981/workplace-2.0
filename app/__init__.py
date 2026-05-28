@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.users import router as user_router
+from app.api.auth import router as auth_router
 from app.core import config
 from app.middleware.exception_handler import register_exception_handlers
 
@@ -25,6 +26,7 @@ register_exception_handlers(app)
 
 # Mount modular routing layers under clean namespaces
 app.include_router(user_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 
 
 @app.get("/", tags=["Health"])

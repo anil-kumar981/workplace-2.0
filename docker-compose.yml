@@ -1,0 +1,28 @@
+version: "3.9"
+
+services: 
+    fastapi:
+      build: .
+      container_name: fastapi-app
+      ports:
+        - "8000:8000"
+      develop:
+        watch:
+          - path: .
+            target: /app
+            action: sync
+            ignore:
+              - .venv/
+              - __pycache__/
+          - path: req.txt
+            action: rebuild
+
+      volumes:
+        - .:/app
+      env_file:
+        - .env
+      restart: always
+    
+# run: 
+# 1. docker-compose build
+# 2. docker-compose up -d

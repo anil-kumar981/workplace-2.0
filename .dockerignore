@@ -1,0 +1,45 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+.env.*
+!.env.example
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker files (optional)
+Dockerfile
+docker-compose.yml
+
+# Node modules (if ever used frontend in same repo)
+node_modules/
+
+# Migrations cache (optional - depends on your workflow)
+alembic/versions/__pycache__/
+
+# Local SQLite DB (if any)
+*.db
+*.sqlite3
