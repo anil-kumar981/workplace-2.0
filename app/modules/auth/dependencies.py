@@ -1,10 +1,10 @@
 from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.dependencies.get_db import get_db
-from app.dependencies.user_dependencies import get_user_repo
-from app.repos.user_repo import UserRepo
-from app.repos.otp_repo import OtpRepo
-from app.services.auth_service import AuthService
+from app.database.sessions import get_db
+from app.modules.users.dependencies import get_user_repo
+from app.modules.users.interfaces.user_repo_interface import IUserRepo
+from .repos import OtpRepo
+from .services import AuthService
 from app.models.users import User
 from app.core import config
 from app.shared.exceptions import AppException
@@ -17,7 +17,7 @@ def get_otp_repo(db: AsyncSession = Depends(get_db)) -> OtpRepo:
     return OtpRepo(db)
 
 def get_auth_service(
-    user_repo: UserRepo = Depends(get_user_repo),
+    user_repo: IUserRepo = Depends(get_user_repo),
     otp_repo: OtpRepo = Depends(get_otp_repo)
 ) -> AuthService:
     """

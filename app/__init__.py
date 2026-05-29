@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.users import router as user_router
-from app.api.auth import router as auth_router
+from app.modules.users.router import router as user_router
+from app.modules.auth.router import router as auth_router
 from app.core import config
 from app.middleware.exception_handler import register_exception_handlers
 

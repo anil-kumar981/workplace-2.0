@@ -2,8 +2,8 @@ from app.shared.utils.check_permissions import PermissionChecker
 from fastapi import APIRouter, Depends, status
 from app.schema import UserCreate
 from app.schema.auth import OtpRequest, OtpVerify, LoginRequest, ForgotPasswordRequest
-from app.services.auth_service import AuthService
-from app.dependencies.auth_dependencies import get_auth_service, get_current_user
+from .services import AuthService
+from .dependencies import get_auth_service, get_current_user
 from app.shared.api_response.api_response import ApiResponse
 from app.shared.utils.jwt_helper import generate_jwt_token
 from app.core import config
