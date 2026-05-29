@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 
 from app.schema import UserResponse, UserCreate
 from app.schema.auth import OtpRequest, OtpVerify, LoginRequest, ForgotPasswordRequest
-from app.repos.user_repo import UserRepo
-from app.repos.otp_repo import OtpRepo
+from app.modules.users.interfaces.user_repo_interface import IUserRepo
+from .repos import OtpRepo
 from app.shared.utils.security import hash_password, verify_password
 from app.shared.utils.email_helper import send_otp_email
 import logging
@@ -20,7 +20,7 @@ class AuthService:
     and secure OTP validation workflows.
     """
 
-    def __init__(self, user_repo: UserRepo, otp_repo: OtpRepo):
+    def __init__(self, user_repo: IUserRepo, otp_repo: OtpRepo):
         self.user_repo = user_repo
         self.otp_repo = otp_repo
 

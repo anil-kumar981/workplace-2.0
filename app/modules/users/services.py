@@ -1,16 +1,13 @@
 from app.schema import UserResponse, UserCreate
-from app.repos.user_repo import UserRepo
-from app.shared.utils.security import hash_password
+from app.shared.base_service import BaseService
 from app.shared.exceptions import AppException
+from app.shared.utils.security import hash_password
 from sqlalchemy.exc import IntegrityError
-from .base_service import BaseService
+from .interfaces.user_repo_interface import IUserRepo
+from .interfaces.user_service_interface import IUserService
 
-class UserService(BaseService[UserRepo]):
-    """
-    UserService coordination layer.
-    Manages transactional scope (commits/rollbacks) and coordinates business rules.
-    """
 
+class UserService(BaseService[IUserRepo], IUserService):
     async def create_user_service(self, user: UserCreate) -> UserResponse:
         try:
             # 1. Hash the plain text password using the shared utility
@@ -41,4 +38,3 @@ class UserService(BaseService[UserRepo]):
         if not user:
             return None
         return UserResponse.model_validate(user)
-

@@ -1,11 +1,11 @@
-from app.dependencies.auth_dependencies import get_current_user
 from fastapi import APIRouter, Depends, status
 from app.schema import UserCreate
-from app.services.user_service import UserService
-from app.dependencies.user_dependencies import get_user_service
 from app.shared.api_response.api_response import ApiResponse
 from app.shared.exceptions import AppException
 from app.shared.utils.check_permissions import PermissionChecker
+from app.modules.auth.dependencies import get_current_user
+from .interfaces.user_service_interface import IUserService
+from .dependencies import get_user_service
 
 router = APIRouter(prefix="/users", tags=["Users"], dependencies=[Depends(get_current_user)])
 
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/users", tags=["Users"], dependencies=[Depends(get_cu
     dependencies=[Depends(PermissionChecker("User", "ManageStaff"))]
 )
 async def create_user(
-    user_in: UserCreate, service: UserService = Depends(get_user_service)
+    user_in: UserCreate, service: IUserService = Depends(get_user_service)
 ):
     """
     Creates a new user account, securing their credentials and registering them in the system.
@@ -35,7 +35,7 @@ async def create_user(
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(PermissionChecker("User", "view"))]
 )
-async def get_all_users(service: UserService = Depends(get_user_service)):
+async def get_all_users(service: IUserService = Depends(get_user_service)):
     """
     Retrieves all registered user accounts.
     Requires 'view' action on 'User' resource.
@@ -52,7 +52,7 @@ async def get_all_users(service: UserService = Depends(get_user_service)):
     dependencies=[Depends(PermissionChecker("User", "view"))]
 )
 async def get_user_by_id(
-    user_id: int, service: UserService = Depends(get_user_service)
+    user_id: int, service: IUserService = Depends(get_user_service)
 ):
     """
     Finds a single user account by its unique integer identifier.
