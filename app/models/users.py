@@ -16,3 +16,10 @@ class User(Base):
 
     role_id = Column(Integer, ForeignKey("roles.id"))
     role = relationship("Role")
+
+    personal_details = relationship(
+        'UserPersonalDetails',
+        back_populates="user",
+        cascade="all, delete-orphan",
+        uselist=False 
+    )

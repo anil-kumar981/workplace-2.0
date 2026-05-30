@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str | None = None
     JWT_SECRET_KEY: str | None = None
     JWT_ALGORITHM: str = 'HS256'
-    JWT_EXPIRES_IN: str = '1h'
+    JWT_EXPIRES_IN: str = '7d'
     SALT_ROUNDS: int = 12
     JWT_COOKIE_NAME: str = 'access_token'
     
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     
     # Cookies
     COOKIE_NAME: str = 'access_token'
-    COOKIE_MAX_AGE: int = 3600
+    COOKIE_MAX_AGE: int = 604800
     COOKIE_SECURE: bool = False
     COOKIE_SAMESITE: str = 'Lax'
     COOKIE_SAME_SITE: str | None = None
@@ -69,11 +69,13 @@ class Settings(BaseSettings):
                 raise ValueError("DATABASE_URL must be explicitly configured in the production environment!")
             if not self.JWT_SECRET_KEY:
                 raise ValueError("JWT_SECRET_KEY must be explicitly configured in the production environment!")
+            self.COOKIE_SECURE = True
         else:
             if not self.DATABASE_URL:
                 self.DATABASE_URL = 'postgresql+asyncpg://postgres:postgres@localhost:5432/postgres'
             if not self.JWT_SECRET_KEY:
                 self.JWT_SECRET_KEY = 'dev-fallback-secret-never-use-in-prod-123456789'
+            self.COOKIE_SECURE = False
         
         # Synchronize cookie same-site variable names
         if self.COOKIE_SAME_SITE:
