@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
-from app.models import UserPersonalDetails, User
+
+from app.models import UserPersonalDetails
 from app.schema import UserPersonalDetailCreate, UserPersonalDetailUpdate
+
 
 class IPersonalDetailsRepo(ABC):
     @abstractmethod
-    async def create_personal_details(self, personal_details: UserPersonalDetailCreate, user_id: int) -> UserPersonalDetails:
+    async def create_personal_details(
+        self, personal_details: UserPersonalDetailCreate, user_id: int
+    ) -> UserPersonalDetails:
         pass
 
     @abstractmethod
@@ -12,5 +16,7 @@ class IPersonalDetailsRepo(ABC):
         pass
 
     @abstractmethod
-    async def update_personal_details(self, personal_details: UserPersonalDetailUpdate, user_id: int) -> UserPersonalDetails:
+    async def update_personal_details(
+        self, personal_details: UserPersonalDetailUpdate, user_id: int
+    ) -> UserPersonalDetails:
         pass

@@ -1,9 +1,11 @@
-from sqlalchemy import Column,ForeignKey, Integer, String, Boolean, DateTime, func
-from app.database import Base
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
+from app.database import Base
+
+
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
@@ -12,14 +14,23 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
-    updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+    )
 
     role_id = Column(Integer, ForeignKey("roles.id"))
     role = relationship("Role")
 
     personal_details = relationship(
-        'UserPersonalDetails',
+        "UserPersonalDetails",
         back_populates="user",
         cascade="all, delete-orphan",
-        uselist=False 
+        uselist=False,
+    )
+
+    banking_details = relationship(
+        "BankingDetails",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        uselist=False,
     )
