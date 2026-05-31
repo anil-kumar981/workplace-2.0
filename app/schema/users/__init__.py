@@ -1,15 +1,20 @@
+from .banking_details import (
+    BankingDetailsCreate,
+    BankingDetailsResponse,
+    BankingDetailsUpdate,
+)
 from .user_base import UserBase
 from .user_create import UserCreate
-from .user_response import UserResponse
 from .user_personal_details import (
     UserPersonalDetailBase,
     UserPersonalDetailCreate,
-    UserPersonalDetailUpdate,
     UserPersonalDetailResponse,
     UserPersonalDetailsCreate,
-    UserPersonalDetailsUpdate,
     UserPersonalDetailsResponse,
+    UserPersonalDetailsUpdate,
+    UserPersonalDetailUpdate,
 )
+from .user_response import UserResponse
 
 __all__ = [
     "UserBase",
@@ -22,4 +27,7 @@ __all__ = [
     "UserPersonalDetailsCreate",
     "UserPersonalDetailsUpdate",
     "UserPersonalDetailsResponse",
+    "BankingDetailsCreate",
+    "BankingDetailsUpdate",
+    "BankingDetailsResponse",
 ]

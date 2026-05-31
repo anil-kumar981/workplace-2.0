@@ -1,11 +1,16 @@
-from app.shared.base_repo import BaseRepo
 from sqlalchemy import select
-from .interfaces.personal_details_repo_interface import IPersonalDetailsRepo
+
+from app.models import UserPersonalDetails
 from app.schema import UserPersonalDetailCreate, UserPersonalDetailUpdate
-from app.models import UserPersonalDetails, User
+from app.shared.base_repo import BaseRepo
+
+from .interfaces.personal_details_repo_interface import IPersonalDetailsRepo
+
 
 class PersonalDetailsRepo(BaseRepo, IPersonalDetailsRepo):
-    async def create_personal_details(self, personal_details: UserPersonalDetailCreate, user_id: int) -> UserPersonalDetails:
+    async def create_personal_details(
+        self, personal_details: UserPersonalDetailCreate, user_id: int
+    ) -> UserPersonalDetails:
         data = UserPersonalDetails(**personal_details.dict(), user_id=user_id)
         self.db.add(data)
         await self.db.commit()
@@ -17,7 +22,17 @@ class PersonalDetailsRepo(BaseRepo, IPersonalDetailsRepo):
         result = await self.db.execute(stmt)
         return result.scalars().first()
 
-    async def update_personal_details(self, personal_details: UserPersonalDetailUpdate, user_id: int) -> UserPersonalDetails:
+    async def update_personal_details(
+        self, personal_details: UserPersonalDetailUpdate, user_id: int
+    ) -> UserPersonalDetails:
+        personal_detail = await self.get_personal_details(user_id)
+        if not personal_detail:
+            from app.shared.exceptions import AppException
+
+            raise AppException(
+                "Personal details not found for the specified user.", 404
+            )
+
         update_data = personal_details.dict(exclude_unset=True)
         for key, value in update_data.items():
             setattr(personal_detail, key, value)

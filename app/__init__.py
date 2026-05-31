@@ -1,12 +1,14 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
-from app.modules.users.router import router as user_router
-from app.modules.auth.router import router as auth_router
-from app.modules.users.personal_details.router import router as personal_details_router
+
 from app.core import config
 from app.middleware.exception_handler import register_exception_handlers
 from app.middleware.logging_middleware import APILoggingMiddleware
+from app.modules.auth.router import router as auth_router
+from app.modules.users.banking_details.router import router as banking_details_router
+from app.modules.users.personal_details.router import router as personal_details_router
+from app.modules.users.router import router as user_router
 
 # Instantiate global security scheme for Swagger UI "Authorize" button
 security_scheme = HTTPBearer(auto_error=False)
@@ -16,7 +18,7 @@ app = FastAPI(
     title=config.APP_TITLE,
     description=config.APP_DESCRIPTION,
     version=config.APP_VERSION,
-    dependencies=[Depends(security_scheme)]
+    dependencies=[Depends(security_scheme)],
 )
 
 # Register request logging middleware
@@ -38,6 +40,8 @@ register_exception_handlers(app)
 app.include_router(user_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(personal_details_router, prefix="/api")
+app.include_router(banking_details_router, prefix=("/api"))
+
 
 @app.get("/", tags=["Health"])
 async def root_health_check():

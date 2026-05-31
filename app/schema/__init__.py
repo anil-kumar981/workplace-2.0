@@ -1,16 +1,19 @@
+from .auth import ForgotPasswordRequest, LoginRequest, OtpRequest, OtpType, OtpVerify
 from .users import (
+    BankingDetailsCreate,
+    BankingDetailsResponse,
+    BankingDetailsUpdate,
     UserBase,
     UserCreate,
-    UserResponse,
     UserPersonalDetailBase,
     UserPersonalDetailCreate,
-    UserPersonalDetailUpdate,
     UserPersonalDetailResponse,
     UserPersonalDetailsCreate,
-    UserPersonalDetailsUpdate,
     UserPersonalDetailsResponse,
+    UserPersonalDetailsUpdate,
+    UserPersonalDetailUpdate,
+    UserResponse,
 )
-from .auth import OtpType, OtpRequest, OtpVerify, LoginRequest, ForgotPasswordRequest
 
 __all__ = [
     "UserBase",
@@ -28,4 +31,7 @@ __all__ = [
     "OtpVerify",
     "LoginRequest",
     "ForgotPasswordRequest",
+    "BankingDetailsCreate",
+    "BankingDetailsUpdate",
+    "BankingDetailsResponse",
 ]
