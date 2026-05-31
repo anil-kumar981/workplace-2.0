@@ -21,6 +21,8 @@ services:
         - .:/app
       env_file:
         - .env
+      environment:
+        - IP_ADDRESS=0.0.0.0
       restart: always
     
 # run: 
