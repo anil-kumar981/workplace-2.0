@@ -1,3 +1,8 @@
+from .announcement.announcement_schema import (
+    AnnouncementCreate,
+    AnnouncementResponse,
+    AnnouncementUpdate,
+)
 from .auth import ForgotPasswordRequest, LoginRequest, OtpRequest, OtpType, OtpVerify
 from .users import (
     BankingDetailsCreate,
@@ -34,4 +39,7 @@ __all__ = [
     "BankingDetailsCreate",
     "BankingDetailsUpdate",
     "BankingDetailsResponse",
+    "AnnouncementCreate",
+    "AnnouncementResponse",
+    "AnnouncementUpdate",
 ]

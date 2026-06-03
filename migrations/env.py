@@ -1,12 +1,30 @@
-import os
 import asyncio
+import os
 from logging.config import fileConfig
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import async_engine_from_config, create_async_engine
 
-__all__ = ["async_engine_from_config"]
+from app.core.config import config as app_config
+
+# add your model's MetaData object here
+# for 'autogenerate' support
+from app.database.base import Base
+from app.models import Announcement, Permission, Role, User, role_permissions
+
+__all__ = [
+    "async_engine_from_config",
+    "Base",
+    "User",
+    "Role",
+    "Permission",
+    "role_permissions",
+    "app_config",
+    "create_async_engine",
+    "Announcement",
+]
 
 # Strip system-wide PGSSLMODE environment variable if present on the host.
 # asyncpg does not support sslmode as a direct connection keyword argument.
@@ -23,12 +41,6 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-from app.database.base import Base
-from app.models import User, Role, Permission, role_permissions
-from app.core.config import config as app_config
-from sqlalchemy.ext.asyncio import create_async_engine
 
 target_metadata = Base.metadata
 
@@ -37,8 +49,6 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-
-from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
 
 def get_async_engine_args(database_url: str):
     """
@@ -53,7 +63,13 @@ def get_async_engine_args(database_url: str):
         parsed = urlparse(database_url)
         query_params = parse_qs(parsed.query)
         sslmode = query_params.pop("sslmode", None)
-        if sslmode and sslmode[0] in ("require", "prefer", "allow", "verify-ca", "verify-full"):
+        if sslmode and sslmode[0] in (
+            "require",
+            "prefer",
+            "allow",
+            "verify-ca",
+            "verify-full",
+        ):
             connect_args["ssl"] = True
         new_query = urlencode(query_params, doseq=True)
         cleaned_url = urlunparse(parsed._replace(query=new_query))

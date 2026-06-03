@@ -1,13 +1,15 @@
 import asyncio
 from datetime import datetime
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.database import engine, Base, async_session
-from app.models.users import User
-from app.models.roles import Role
-from app.models.permissions import Permission
-from app.shared.utils.security import hash_password
+
 from app.core.config import config
+from app.database import Base, async_session, engine
+from app.models.permissions import Permission
+from app.models.roles import Role
+from app.models.users import User
+from app.shared.utils.security import hash_password
 
 __all__ = ["AsyncSession"]
 
@@ -245,6 +247,13 @@ INITIAL_PERMISSIONS = [
         "action": "manage",
         "scope": "any",
         "description": "Manage announcements (Create/Edit/Delete)",
+    },
+    {
+        "key": "Announcement:view:any",
+        "resource": "Announcement",
+        "action": "view",
+        "scope": "any",
+        "description": "View announcements",
     },
     # Recruitment
     {
