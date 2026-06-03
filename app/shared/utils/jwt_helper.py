@@ -1,10 +1,13 @@
-import jwt
 from datetime import datetime, timedelta
-from app.core import config
-from app.shared.exceptions import AppException
-from app.models.users import User
-from sqlalchemy.ext.asyncio import AsyncSession
+
+import jwt
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core import config
+from app.models.users import User
+from app.shared.exceptions import AppException
+
 
 def _get_expires_delta() -> timedelta:
     """
@@ -26,7 +29,10 @@ def _get_expires_delta() -> timedelta:
     except Exception:
         return timedelta(hours=1)
 
-def generate_jwt_token(user_id: int, email: str, expires_delta: timedelta = None) -> str:
+
+def generate_jwt_token(
+    user_id: int, email: str, expires_delta: timedelta = None
+) -> str:
     """
     Generates a secure JWT token for a given user.
     """
@@ -37,18 +43,17 @@ def generate_jwt_token(user_id: int, email: str, expires_delta: timedelta = None
         "sub": str(user_id),
         "email": email,
         "exp": datetime.utcnow() + expires_delta,
-        "iat": datetime.utcnow()
+        "iat": datetime.utcnow(),
     }
 
     try:
         token = jwt.encode(
-            payload,
-            config.JWT_SECRET_KEY,
-            algorithm=config.JWT_ALGORITHM
+            payload, config.JWT_SECRET_KEY, algorithm=config.JWT_ALGORITHM
         )
         return token
     except Exception as e:
         raise AppException(f"Failed to generate authentication token: {str(e)}", 500)
+
 
 async def validate_jwt_token(token: str, db: AsyncSession) -> User:
     """
@@ -57,12 +62,12 @@ async def validate_jwt_token(token: str, db: AsyncSession) -> User:
     """
     try:
         payload = jwt.decode(
-            token,
-            config.JWT_SECRET_KEY,
-            algorithms=[config.JWT_ALGORITHM]
+            token, config.JWT_SECRET_KEY, algorithms=[config.JWT_ALGORITHM]
         )
     except jwt.ExpiredSignatureError:
-        raise AppException("Authentication token has expired. Please log in again.", 401)
+        raise AppException(
+            "Authentication token has expired. Please log in again.", 401
+        )
     except jwt.InvalidTokenError:
         raise AppException("Invalid authentication token. Please log in again.", 401)
     except Exception as e:
@@ -82,7 +87,7 @@ async def validate_jwt_token(token: str, db: AsyncSession) -> User:
     user = result.scalars().first()
 
     if not user:
-        raise AppException("User account associated with this token was not found.", 401)
+        raise AppException("Unauthorized Access. Please login again.", 401)
 
     if not user.is_active:
         raise AppException("This user account has been deactivated.", 401)

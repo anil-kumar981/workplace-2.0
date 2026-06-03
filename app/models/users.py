@@ -34,3 +34,18 @@ class User(Base):
         cascade="all, delete-orphan",
         uselist=False,
     )
+
+    created_announcements = relationship(
+        "Announcement",
+        back_populates="created_by",
+        foreign_keys="Announcement.created_by_id",
+    )
+
+    updated_announcements = relationship(
+        "Announcement",
+        back_populates="updated_by",
+        foreign_keys="Announcement.updated_by_id",
+    )
+
+    def __repr__(self) -> str:
+        return f"<Employee id={self.id} name='{self.username}' email='{self.email}'>"

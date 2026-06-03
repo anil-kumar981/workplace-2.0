@@ -5,6 +5,7 @@ from fastapi.security import HTTPBearer
 from app.core import config
 from app.middleware.exception_handler import register_exception_handlers
 from app.middleware.logging_middleware import APILoggingMiddleware
+from app.modules.announcement.router import router as announcement_router
 from app.modules.auth.router import router as auth_router
 from app.modules.users.banking_details.router import router as banking_details_router
 from app.modules.users.personal_details.router import router as personal_details_router
@@ -41,6 +42,7 @@ app.include_router(user_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(personal_details_router, prefix="/api")
 app.include_router(banking_details_router, prefix=("/api"))
+app.include_router(announcement_router, prefix=("/api"))
 
 
 @app.get("/", tags=["Health"])
